@@ -41,6 +41,23 @@ curl https://europe-west1-craftnote-live.cloudfunctions.net/v1/createproject/ \
 
 ## Beispielabfrage XML
 
+```sh
+<?xml version="1.0" encoding="UTF-8"?>
+<Project>
+	<name>Wasserrohrbruch</name>
+	<orderNumber>12312344d</orderNumber>
+	<street>Bahnhofstr. 12</street>
+	<zipcode>70174</zipcode>
+	<city>Stuttgart</city>
+	<contacts>
+		<name>Herr Maier</name>
+		<email>maier@test.de</email>
+		<phone>+49 711 21893732232</phone>
+	</contacts>
+	<billingCity>Stuttgart</billingCity>
+</Project>
+
+```
 ## Response
 
 ```sh
