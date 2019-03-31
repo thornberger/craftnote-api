@@ -43,3 +43,12 @@ curl https://europe-west1-craftnote-live.cloudfunctions.net/v1/createproject/ \
 
 ## Response
 
+```sh
+{
+  "webLink": "https://app.mycraftnote.de/#/project?id=0DDAAAA9-2508-4AAF-A576-E91E76EA8CDB",
+  "appDeepLink": "mycrafty://project?id=0DDAAAA9-2508-4AAF-A576-E91E76EA8CDB"
+}
+```
+
+
+
