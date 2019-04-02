@@ -1,0 +1,173 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Craftnote API",
+    "version": "0.1.0",
+    "description": "API for the Craftnote platform.",
+    "contact": {
+      "name": "Bitfactory GmbH",
+      "email": "hello@bitfactory.io",
+      "url": "https://www.bitfactory.io/de/"
+    },
+    "license": {
+      "name": "Proprietary"
+    }
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "host": "api.craftnote.de",
+  "basePath": "/v1",
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/createproject/": {
+      "post": {
+        "description": "Creates a new project",
+        "tags": [
+          "Create new project"
+        ],
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "apikey",
+            "required": true,
+            "type": "string",
+            "description": "The key to authenticate against api"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "The project data which should be created",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Project"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Project successfully created",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "The request could not be authenticated or the authenticated user is not authorized to access the requested resource."
+          },
+          "421": {
+            "description": "The request could not be processed, usually due to a missing or invalid project_name parameter."
+          },
+          "431": {
+            "description": "The request could not be processed, usually due to a missing or invalid parameter.."
+          },
+          "432": {
+            "description": "The request could not be processed, API key is not valid."
+          },
+          "500": {
+            "description": "Serverside error"
+          },
+          "default": {
+            "description": "unexpected error"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Response": {
+      "type": "object",
+      "required": [
+        "webLink",
+        "appDeepLink"
+      ],
+      "properties": {
+        "webLink": {
+          "type": "string",
+          "description": "The link to the created project which can be opened in a browser",
+          "example": "https://app.mycraftnote.de/#/project?id=0DDAAAA9-2508-4AAF-A576-E91E76EA8CDB"
+        },
+        "appDeepLink": {
+          "type": "string",
+          "description": "The deeplink to the created project which can be opened in a mobile client",
+          "example": "mycrafty://project?id=0DDAAAA9-2508-4AAF-A576-E91E76EA8CDB"
+        }
+      }
+    },
+    "contacts": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the contact",
+          "example": "Herr Maier",
+          "pattern": "^[a-zA-ZäÄöÖüÜß ]+([ -][a-zA-Z ]+)*$"
+        },
+        "email": {
+          "type": "string",
+          "description": "The email of the contact",
+          "example": "maier@test.de",
+          "pattern": "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\\\.[A-Za-z]{2,}"
+        },
+        "phone": {
+          "type": "string",
+          "description": "The phone of the contact",
+          "example": "+49 711 21893732232",
+          "pattern": "^\\+*[0-9]+"
+        }
+      }
+    },
+    "Project": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the project",
+          "example": "Wasserrohrbruch",
+          "pattern": "^[a-zA-ZäÄöÖüÜß ]+([ -][a-zA-Z ]+)*$"
+        },
+        "orderNumber": {
+          "type": "string",
+          "description": "The ordernumber of the project",
+          "example": "12312344d"
+        },
+        "zipcode": {
+          "type": "string",
+          "description": "The zipcode of the project",
+          "pattern": "^[0-9a-zA-ZäÄöÖüÜß ]{4,}$",
+          "example": 70174
+        },
+        "contact": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Contact"
+          },
+          "description": "The contacts of the project"
+        },
+        "billingCity": {
+          "type": "string",
+          "description": "The billing city of the projeect",
+          "example": "Stuttgart",
+          "pattern": "[a-zA-ZäöüÄÖÜ .\\\\/-]+"
+        }
+      }
+    }
+  }
+}
