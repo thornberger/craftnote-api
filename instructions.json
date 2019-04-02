@@ -4,11 +4,6 @@
     "title": "Craftnote API",
     "version": "0.1.0",
     "description": "API for the Craftnote platform.",
-    "contact": {
-      "name": "Bitfactory GmbH",
-      "email": "hello@bitfactory.io",
-      "url": "https://www.bitfactory.io/de/"
-    },
     "license": {
       "name": "Proprietary"
     }
