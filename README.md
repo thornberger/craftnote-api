@@ -1,6 +1,8 @@
 # Craftnote-api
 
-Diese API ermöglicht die automatisierte Erstellung von Projekten in der Craftnote App. JSON und XML
+Diese API ermöglicht die automatisierte Erstellung von Projekten in der Craftnote App. 
+Aktzeptierte Formate
+-JSON & XML
 
 ## Server-URL
 
@@ -11,9 +13,79 @@ https://europe-west1-craftnote-live.cloudfunctions.net
 
 - [`POST /v1/createproject/`]
 
+## Verifzierung
+
+Die Verifizierung des Accounts erfolgt über einen APIKEY den man durch die mycraftnote digital Gmbh erhält.
+Für Informationen und die Beantragung eines API-Keys schreibt an api@mycraftnote.de
+
+## Swagger
+
+Die beiliegende instructions.json kann unter
+https://editor.swagger.io/
+eingelesen werden
 
 ## Modelle
 
+response
+```sh
+webLink*	string
+example: https://app.mycraftnote.de/#/project?id=0DDAAAA9-2508-4AAF-A576-E91E76EA8CDB
+The link to the created project which can be opened in a browser
+
+appDeepLink*	string
+example: mycrafty://project?id=0DDAAAA9-2508-4AAF-A576-E91E76EA8CDB
+The deeplink to the created project which can be opened in a mobile client
+```
+
+Project
+```sh
+name*	string
+example: Wasserrohrbruch
+The name of the project
+
+orderNumber	string
+example: 12312344d
+The ordernumber of the project
+
+street	string
+pattern: [a-zA-ZßäöüÄÖÜ .\\/-]+ [0-9a-z \\/-]*$
+example: Bahnhofstr. 12
+The street of the project
+
+zipcode	string
+pattern: ^[0-9a-zA-ZäÄöÖüÜß ]{4,}$
+example: 70174
+The zipcode of the project
+
+city	string
+pattern: [a-zA-ZäöüÄÖÜ .\\/-]+
+example: Stuttgart
+The city of the project
+
+contacts	[...]
+billingCity	string
+pattern: [a-zA-ZäöüÄÖÜ .\\/-]+
+example: Stuttgart
+The billing city of the projeect
+```
+
+Contacts
+```sh
+name*	string
+pattern: ^[a-zA-ZäÄöÖüÜß ]+([ -][a-zA-Z ]+)*$
+example: Herr Maier
+The name of the contact
+
+email	string
+pattern: [A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}
+example: maier@test.de
+The email of the contact
+
+phone	string
+pattern: ^\+*[0-9]+
+example: +49 711 21893732232
+The phone of the contact
+```
 
 ## Beispielabfrage JSON
 
@@ -36,7 +108,6 @@ curl https://europe-west1-craftnote-live.cloudfunctions.net/v1/createproject/ \
   ],
   "billingCity": "Stuttgart"
 }
-'
 ```
 
 ## Beispieldatei XML
