@@ -2,7 +2,8 @@
 
 Diese API ermöglicht die automatisierte Erstellung von Projekten in der Craftnote App. 
 Aktzeptierte Formate
--JSON & XML
+1. JSON 
+2. XML
 
 ## Server-URL
 
