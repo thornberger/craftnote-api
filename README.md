@@ -7,7 +7,7 @@ Aktzeptierte Formate
 
 ## Server-URL
 
-https://europe-west1-craftnote-live.cloudfunctions.net
+https://api.craftnote.de
 
 
 ## Endpoints
