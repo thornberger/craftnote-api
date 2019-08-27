@@ -24,28 +24,21 @@
   "schemes": [
     "https"
   ],
+  "securityDefinitions": {
+    "ApiKeyAuth": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "X-CN-API-Key"
+    }
+  },
   "paths": {
-    "/users/{userId}/projects": {
+    "/projects": {
       "get": {
-        "description": "List all projects for a given user",
+        "description": "List all projects for the authorized account",
         "tags": [
           "List projects"
         ],
         "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "description": "The ID of the user.",
-            "type": "string"
-          },
-          {
-            "in": "query",
-            "name": "apikey",
-            "required": true,
-            "type": "string",
-            "description": "The key to authenticate against api"
-          },
           {
             "in": "query",
             "name": "offset",
@@ -72,20 +65,76 @@
               "$ref": "#/definitions/Error"
             }
           },
-          "403": {
-            "description": "Not allowed to access projects for this user",
+          "401": {
+            "description": "Unable to authorize",
             "schema": {
               "$ref": "#/definitions/Error"
             }
           },
-          "404": {
-            "description": "User ID was not found",
+          "415": {
+            "description": "Invalid content type",
             "schema": {
               "$ref": "#/definitions/Error"
             }
           },
           "default": {
             "description": "unexpected error"
+          }
+        }
+      },
+      "post": {
+        "description": "Create a new project",
+        "tags": [
+          "Create new project"
+        ],
+        "consumes": [
+          "application/json",
+          "multipart/form-data",
+          "application/xml"
+        ],
+        "produces": [
+          "application/json",
+          "multipart/form-data",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "The project details",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Project"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Project successfully created",
+            "schema": {
+              "$ref": "#/definitions/ProjectLink"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "415": {
+            "description": "Invalid content type",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "default": {
+            "description": "unexpected server error"
           }
         }
       }
@@ -98,17 +147,10 @@
           "required": true,
           "description": "The ID of the project.",
           "type": "string"
-        },
-        {
-          "in": "query",
-          "name": "apikey",
-          "required": true,
-          "type": "string",
-          "description": "The API key to authenticate against"
         }
       ],
       "get": {
-        "description": "List all files/folders in the root folder of a project",
+        "description": "List all files of a project",
         "tags": [
           "List files"
         ],
@@ -160,23 +202,43 @@
         }
       },
       "post": {
-        "description": "Upload a file to the root folder of a project",
+        "description": "Upload a file",
         "tags": [
           "Upload file"
         ],
+        "consumes": [
+          "application/json",
+          "multipart/form-data",
+          "application/xml"
+        ],
+        "produces": [
+          "application/json",
+          "multipart/form-data",
+          "application/xml"
+        ],
         "parameters": [
           {
-            "in": "body",
-            "name": "file",
-            "description": "The file to upload.",
-            "schema": {
-              "$ref": "#/definitions/UploadFile"
-            }
+            "in": "formData",
+            "name": "location",
+            "type": "string",
+            "description": "The file location"
+          },
+          {
+            "in": "formData",
+            "name": "type",
+            "type": "string",
+            "description": "The file type (folder, document, image)"
+          },
+          {
+            "in": "formData",
+            "name": "data",
+            "type": "file",
+            "description": "The content data (required if type is not a folder)"
           }
         ],
         "responses": {
           "200": {
-            "description": "File uploaded successfully",
+            "description": "File created successfully",
             "schema": {
               "$ref": "#/definitions/File"
             }
@@ -222,136 +284,8 @@
           "required": true,
           "description": "The ID of the project.",
           "type": "string"
-        },
-        {
-          "in": "query",
-          "name": "apikey",
-          "required": true,
-          "type": "string",
-          "description": "The API key to authenticate against"
         }
       ],
-      "get": {
-        "description": "List all files/folders in a subfolder of a project",
-        "tags": [
-          "List files"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "The folder ID to list files for",
-            "type": "string"
-          },
-          {
-            "in": "query",
-            "name": "offset",
-            "type": "integer",
-            "description": "The number of items to skip."
-          },
-          {
-            "in": "query",
-            "name": "limit",
-            "type": "integer",
-            "maximum": 500,
-            "description": "The numbers of items to return (maximum 500)."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List returned successfully",
-            "schema": {
-              "$ref": "#/definitions/FilesList"
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "403": {
-            "description": "Not allowed to access this project ID",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "404": {
-            "description": "Project ID was not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "default": {
-            "description": "unexpected server error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      },
-      "post": {
-        "description": "Upload a file to a subfolder",
-        "tags": [
-          "Upload file"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "The ID of the folder to upload a file to",
-            "type": "string"
-          },
-          {
-            "in": "body",
-            "name": "file",
-            "description": "The file to upload.",
-            "schema": {
-              "$ref": "#/definitions/UploadFile"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "File uploaded successfully",
-            "schema": {
-              "$ref": "#/definitions/File"
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "403": {
-            "description": "Not allowed to access this project ID",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "404": {
-            "description": "Project ID was not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "413": {
-            "description": "File size exceeds server limits",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "default": {
-            "description": "unexpected server error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      },
       "put": {
         "description": "Update the name of a file",
         "tags": [
@@ -416,6 +350,7 @@
     },
     "/createproject/": {
       "post": {
+        "deprecated": true,
         "description": "Creates a new project in the overview",
         "tags": [
           "Create new project"
@@ -424,13 +359,6 @@
           "application/json"
         ],
         "parameters": [
-          {
-            "in": "path",
-            "name": "apikey",
-            "required": true,
-            "type": "string",
-            "description": "The API key to authenticate against"
-          },
           {
             "in": "body",
             "name": "body",
@@ -445,7 +373,7 @@
           "200": {
             "description": "Project successfully created",
             "schema": {
-              "$ref": "#/definitions/Linkable"
+              "$ref": "#/definitions/ProjectLink"
             }
           },
           "400": {
@@ -462,6 +390,7 @@
     },
     "/createfolder/": {
       "post": {
+        "deprecated": true,
         "description": "Creates a new folder in the overview",
         "tags": [
           "Create new folder"
@@ -471,13 +400,6 @@
           "application/xml"
         ],
         "parameters": [
-          {
-            "in": "path",
-            "name": "apikey",
-            "required": true,
-            "type": "string",
-            "description": "The API key to authenticate against"
-          },
           {
             "in": "body",
             "name": "body",
@@ -492,7 +414,7 @@
           "200": {
             "description": "Folder successfully created",
             "schema": {
-              "$ref": "#/definitions/Linkable"
+              "$ref": "#/definitions/ProjectLink"
             }
           },
           "400": {
@@ -519,25 +441,6 @@
           "type": "string",
           "description": "A message describing the error",
           "example": "An error occured."
-        }
-      }
-    },
-    "Linkable": {
-      "type": "object",
-      "required": [
-        "webLink",
-        "appDeepLink"
-      ],
-      "properties": {
-        "webLink": {
-          "type": "string",
-          "description": "The link to the created project which can be opened in a browser",
-          "example": "https://app.mycraftnote.de/#/project?id=0DDAAAA9-2508-4AAF-A576-E91E76EA8CDB"
-        },
-        "appDeepLink": {
-          "type": "string",
-          "description": "The deeplink to the created project which can be opened in a mobile client",
-          "example": "mycrafty://project?id=0DDAAAA9-2508-4AAF-A576-E91E76EA8CDB"
         }
       }
     },
@@ -587,34 +490,39 @@
       "properties": {
         "name": {
           "type": "string",
-          "description": "The name of the project",
+          "description": "Name of this project",
           "example": "Wasserrohrbruch"
         },
         "id": {
           "type": "string",
-          "description": "The unique ID of a project",
+          "description": "Unique project ID",
           "example": "0000FFB2-9DC1-4A50-A8BB-14C899CC52FC"
+        },
+        "type": {
+          "type": "string",
+          "description": "The project type (folder|project)",
+          "example": "folder"
         },
         "orderNumber": {
           "type": "string",
-          "description": "The ordernumber of the project",
+          "description": "Order number for this project",
           "example": "12312344d"
         },
         "street": {
           "type": "string",
-          "description": "The street of the project",
+          "description": "Street address of this project",
           "pattern": "[a-zA-ZßäöüÄÖÜ .\\\\/-]+[ ]?[0-9a-zA-ZßäöüÄÖÜ \\\\/-]*$",
           "example": "Bahnhofstr. 12"
         },
         "zipcode": {
           "type": "string",
-          "description": "The zipcode of the project",
+          "description": "ZIP code of this project",
           "pattern": "^[0-9a-zA-ZäÄöÖüÜß ]{4,}$",
           "example": 70174
         },
         "city": {
           "type": "string",
-          "description": "The city of the project",
+          "description": "Name of the city of this project",
           "pattern": "[a-zA-ZäöüÄÖÜß .\\\\\\\\/-]+",
           "example": "Stuttgart"
         },
@@ -623,24 +531,20 @@
           "items": {
             "$ref": "#/definitions/Contact"
           },
-          "description": "The contacts of the project"
+          "description": "Contacts for this project"
         },
         "billingCity": {
           "type": "string",
-          "description": "The billing city of the projeect",
+          "description": "Billing city of this projeect",
           "example": "Stuttgart",
           "pattern": "[a-zA-ZäöüÄÖÜß .\\\\\\\\/-]+"
         },
         "projects": {
           "type": "array",
+          "description": "IDs of projects contained in this project (only applies to type folder)",
           "items": {
             "type": "string"
-          },
-          "description": "The projects of a folder",
-          "example": [
-            "Baustelle A",
-            "Baustelle B"
-          ]
+          }
         }
       }
     },
@@ -650,7 +554,7 @@
         "items"
       ],
       "properties": {
-        "items": {
+        "projects": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/Project"
@@ -658,10 +562,31 @@
         }
       }
     },
+    "ProjectLink": {
+      "type": "object",
+      "required": [
+        "webLink",
+        "appDeepLink"
+      ],
+      "properties": {
+        "webLink": {
+          "type": "string",
+          "description": "The link to the created project which can be opened in a browser",
+          "example": "https://app.mycraftnote.de/#/project?id=0DDAAAA9-2508-4AAF-A576-E91E76EA8CDB"
+        },
+        "appDeepLink": {
+          "type": "string",
+          "description": "The deeplink to the created project which can be opened in a mobile client",
+          "example": "mycrafty://project?id=0DDAAAA9-2508-4AAF-A576-E91E76EA8CDB"
+        }
+      }
+    },
     "File": {
       "type": "object",
       "required": [
-        "id name type"
+        "id",
+        "name",
+        "type"
       ],
       "properties": {
         "id": {
@@ -674,10 +599,15 @@
           "description": "The user-defined file name",
           "example": "Projektbericht.pdf"
         },
+        "folder": {
+          "type": "string",
+          "description": "The parent folder ID of this file",
+          "example": "00061E3C-9C02-3CE5-EDFD-9186E6F28114"
+        },
         "type": {
           "type": "string",
           "description": "The file type (folder, document, image)",
-          "example": "FOLDER"
+          "example": "folder"
         },
         "creationTimestamp": {
           "type": "string",
@@ -697,29 +627,6 @@
           "items": {
             "$ref": "#/definitions/File"
           }
-        }
-      }
-    },
-    "UploadFile": {
-      "type": "object",
-      "required": [
-        "name type"
-      ],
-      "properties": {
-        "name": {
-          "type": "string",
-          "description": "The user-defined file name",
-          "example": "Projektbericht.pdf"
-        },
-        "type": {
-          "type": "string",
-          "description": "The file type (folder, document, image)",
-          "example": "FOLDER"
-        },
-        "creationTimestamp": {
-          "type": "string",
-          "description": "The creation timestamp as RFC-3339 date string",
-          "example": "2019-02-03T04:05:06Z"
         }
       }
     },
